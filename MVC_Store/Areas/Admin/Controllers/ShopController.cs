@@ -91,9 +91,6 @@ namespace MVC_Store.Areas.Admin.Controllers
                     count++;
                 }
             }
-        }
-
-        
-        
+        }        
     }
 }
