@@ -91,6 +91,51 @@ namespace MVC_Store.Areas.Admin.Controllers
                     count++;
                 }
             }
-        }        
+        }
+
+        // GET: Admin/Shop/DeleteCategory/id
+        public ActionResult DeleteCategory(int id)
+        {
+            using (Db db = new Db())
+            {
+                //Получаем модель категории
+                CategoryDTO dto = db.Categories.Find(id);
+
+                //Удаляем категорию
+                db.Categories.Remove(dto);
+
+                //Сохраняем изменения
+                db.SaveChanges();
+            }
+            TempData["SM"] = "You have deleted a category";
+
+            //Переадресовываем
+            return RedirectToAction("Categories");
+        }
+
+
+        // POST: Admin/Shop/RenameCategory/id
+        [HttpPost]
+        public string RenameCategory(string newCatName, int id)
+        {
+            using (Db db = new Db())
+            {
+                // Проверяем имя на уникальность
+                if (db.Categories.Any(x => x.Name == newCatName))
+                    return "titletaken";
+
+                // Получаем модель DTO
+                CategoryDTO dto = db.Categories.Find(id);
+
+                // Редактируем модель DTO
+                dto.Name = newCatName;
+                dto.Slug = newCatName.Replace(" ", "-").ToLower();
+
+                // Сохраняем изменения
+                db.SaveChanges();
+            }
+            // Возвращаем слово
+            return "ok";
+        }
     }
 }
