@@ -322,5 +322,28 @@ namespace MVC_Store.Areas.Admin.Controllers
             // Возвращаем представление с данными
             return View(listOfProductVM);
         }
+
+        // POST: Admin/Shop/DeleteProduct/id
+        public ActionResult DeleteProduct(int id)
+        {
+            // Удаляем товар из базы данных
+            using (Db db = new Db())
+            {
+                ProductDTO dto = db.Products.Find(id);
+                db.Products.Remove(dto);
+
+                db.SaveChanges();
+            }
+
+            // Удаляем дериктории товара (изображения)
+            var originalDirectory = new DirectoryInfo(string.Format($"{Server.MapPath(@"\")}Images\\Uploads"));
+            var pathString = Path.Combine(originalDirectory.ToString(), "Products\\" + id.ToString());
+
+            if (Directory.Exists(pathString))
+                Directory.Delete(pathString, true);
+
+            // Переадресовываем пользователя
+            return RedirectToAction("Products");
+        }
     }
 }
