@@ -109,7 +109,6 @@ namespace MVC_Store.Areas.Admin.Controllers
             }
             TempData["SM"] = "You have deleted a category";
 
-            //Переадресовываем
             return RedirectToAction("Categories");
         }
 
