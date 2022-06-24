@@ -32,8 +32,10 @@ namespace MVC_Store.Controllers
         public ActionResult CreateAccount(UserVM model)
         {
             // Проверяем модель на валидность
-            if (!ModelState.IsValid)
-                return View("CreateAccount", model);
+            if (!ModelState.IsValid) 
+            { 
+                return View("CreateAccount", model); 
+            }
 
             // Проверяем соответствие пароля
             if (!model.Password.Equals(model.ConfirmPassword))
@@ -96,7 +98,9 @@ namespace MVC_Store.Controllers
             string userName = User.Identity.Name;
 
             if (!string.IsNullOrEmpty(userName))
+            {
                 return RedirectToAction("user-profile");
+            }
 
             // Возвращаем представление
             LoginUserVM model = new LoginUserVM();
@@ -117,7 +121,9 @@ namespace MVC_Store.Controllers
             using (Db db = new Db())
             {
                 if (db.Users.Any(x => x.Username.Equals(model.Username) && x.Password.Equals(model.Password)))
+                { 
                     isValid = true;
+                    }
 
                 if (!isValid)
                 {
@@ -151,7 +157,6 @@ namespace MVC_Store.Controllers
             { 
                 // Получаем пользователя
                 UserDTO dto = db.Users.FirstOrDefault(x => x.Username == userName);
-
 
                 // Заполняем модель данными из контекста (DTO)
                 model = new UserNavPartialVM()
@@ -251,10 +256,14 @@ namespace MVC_Store.Controllers
             TempData["SM"] = "You have edited your profile!";
 
             if (!userNameIsChanged)
+            {
                 // Возвращаем представление с моделью
                 return View("UserProfile", model);
+            }
             else
+            {
                 return RedirectToAction("Logout");
+            }
         }
     }
 }
