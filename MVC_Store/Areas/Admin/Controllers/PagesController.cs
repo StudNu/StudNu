@@ -227,5 +227,48 @@ namespace MVC_Store.Areas.Admin.Controllers
             //Переадресовываем
             return RedirectToAction("Index");
         }
+
+        // GET: Admin/Pages/EditSidebar
+        [HttpGet]
+        public ActionResult EditSidebar()
+        {
+            //Объявляем модель
+            SidebarVM model;
+
+            using (Db db = new Db())
+            {
+                //Получаем данные из DTO
+                SidebarDTO dto = db.Sidebars.Find(1); //Говнокод! Жёсткие значения в коде не желательно добавлять!!!
+
+                //Заполняем модель данными
+                model = new SidebarVM(dto);
+
+            }
+            //Вернуть представление с моделью
+            return View(model);
+        }
+
+
+        // POST: Admin/Pages/EditSidebar
+        [HttpPost]
+        public ActionResult EditSidebar(SidebarVM model)
+        {
+            using (Db db = new Db())
+            {
+                //Получаем данные из DTO
+                SidebarDTO dto = db.Sidebars.Find(1);
+
+                //Присваиваем данные в тело (в свойство Body)
+                dto.Body = model.Body;
+
+                //Сохраняем
+                db.SaveChanges();
+            }
+            //Присваиваем сообщение в TempData
+            TempData["SM"] = "You have edited the sidebar!";
+
+            //Переадресовываем пользователя
+            return RedirectToAction("EditSidebar");
+        }
     }
 }
