@@ -207,5 +207,25 @@ namespace MVC_Store.Areas.Admin.Controllers
             //Возвращаем модель в представление
             return View(model);
         }
+
+        // GET: Admin/Pages/DeletePage/id
+        public ActionResult DeletePage(int id)
+        {
+            using (Db db = new Db())
+            {
+                //Получаем страницу
+                PagesDTO dto = db.Pages.Find(id);
+
+                //Удаляем страницу
+                db.Pages.Remove(dto);
+
+                //Сохраняем изменения
+                db.SaveChanges();
+            }
+            TempData["SM"] = "You have deleted a page";
+
+            //Переадресовываем
+            return RedirectToAction("Index");
+        }
     }
 }
