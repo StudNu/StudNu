@@ -999,6 +999,7 @@
     <Content Include="Views\Shop\_CategoryMenuPartial.cshtml" />
     <Content Include="Views\Cart\Index.cshtml" />
     <Content Include="Views\Cart\_CartPartial.cshtml" />
+    <Content Include="Views\Cart\_AddToCartPartial.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="fileman\aspnet_client\system_web\2_0_50727\" />
