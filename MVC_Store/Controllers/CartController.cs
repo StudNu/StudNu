@@ -195,5 +195,74 @@ namespace MVC_Store.Controllers
                 cart.Remove(model);
             }
         }
+
+        public ActionResult PaypalPartial()
+        {
+            // Получаем список товаров в корзине
+            List<CartVM> cart = Session["cart"] as List<CartVM>;
+
+            // Возвращаем частичное представление с листом
+            return PartialView(cart);
+        }
+
+
+        // POST: /cart/PlaceOrder
+        [HttpPost]
+        public void PlaceOrder()
+        {
+            // Получаем список товаров в корзине
+            List<CartVM> cart = Session["cart"] as List<CartVM>;
+
+            // Получаем имя пользователя
+            string userName = User.Identity.Name;
+
+            // Объявляем переменную для orderId
+            int orderId = 0;
+
+            using (Db db = new Db())
+            {
+                // Объявляем модель OrderDTO
+                OrderDTO orderDto = new OrderDTO();
+
+                // Получаем ID пользователя
+                var q = db.Users.FirstOrDefault(x => x.Username == userName);
+                int userId = q.Id;
+
+                // Заполняем модель OrderDTO данными и сохраняем
+                orderDto.UserId = userId;
+                orderDto.CreatedAt = DateTime.Now;
+
+                db.Orders.Add(orderDto);
+                db.SaveChanges();
+
+                // Получаем orderId
+                orderId = orderDto.OrderId;
+
+                // Объявляем модель OrderDetailsDTO
+                OrderDetailsDTO orderDetailsDto = new OrderDetailsDTO();
+
+                // Добавляем в модель данные
+                foreach (var item in cart)
+                {
+                    orderDetailsDto.OrderId = orderId;
+                    orderDetailsDto.UserId = userId;
+                    orderDetailsDto.ProductId = item.ProductId;
+                    orderDetailsDto.Quantity = item.Quantity;
+
+                    db.OrderDetails.Add(orderDetailsDto);
+                    db.SaveChanges();
+                }
+            }
+            // Отправляем письмо о заказе на почту администратора
+            var client = new SmtpClient("smtp.mailtrap.io", 2525)
+            {
+                Credentials = new NetworkCredential("ee053ae36467a9", "8bf25933605f02"),
+                EnableSsl = true
+            };
+            client.Send("shop@example.com", "admin@example.com", "New Order", $"You have a new order. Order number: {orderId}");
+
+            // Обноляем сессию
+            Session["cart"] = null;
+        }
     }
 }
